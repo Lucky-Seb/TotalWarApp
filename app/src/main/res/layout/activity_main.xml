@@ -7,32 +7,73 @@
     tools:context=".MainActivity">
 
 
-    <LinearLayout
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:backgroundTint="@color/white"
-        app:layout_constraintTop_toTopOf="parent">
+        android:paddingLeft="16dp"
+        android:paddingTop="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="16dp"
+        tools:context=".MainActivity">
 
-        <LinearLayout
+        <!-- Button for GET API call -->
+        <Button
+            android:id="@+id/getButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:text="GET Data"
+            android:layout_marginBottom="8dp"/>
 
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColor="@color/purple_700"
-                android:textSize="20sp"
-                android:textAlignment="center"
-                android:text="fuck geeks for geeks" />
-        </LinearLayout>
+        <!-- EditText for factionName input -->
+        <EditText
+            android:id="@+id/factionNameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter Faction Name"
+            android:layout_below="@id/getButton"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"/>
 
-    </LinearLayout>
+        <!-- Button for POST API call -->
+        <Button
+            android:id="@+id/postButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="POST Data"
+            android:layout_below="@id/factionNameEditText"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- EditText for updatedFactionName input -->
+        <EditText
+            android:id="@+id/updatedFactionNameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter Updated Faction Name"
+            android:layout_below="@id/postButton"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Button for PUT API call -->
+        <Button
+            android:id="@+id/putButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="PUT Data"
+            android:layout_below="@id/updatedFactionNameEditText"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Button for DELETE API call -->
+        <Button
+            android:id="@+id/deleteButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="DELETE Data"
+            android:layout_below="@id/putButton"
+            android:layout_marginTop="8dp"/>
+
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
