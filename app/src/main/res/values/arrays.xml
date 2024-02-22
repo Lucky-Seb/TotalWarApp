@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="controller_names">
+        <item>Controller1</item>
+        <item>Controller2</item>
+        <item>Controller3</item>
+        <!-- Add more items as needed -->
+    </array>
+</resources>
