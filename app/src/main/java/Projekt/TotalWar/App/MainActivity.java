@@ -1,6 +1,7 @@
 package Projekt.TotalWar.App;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -20,8 +21,9 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private ApiCallHelper apiCallHelper;
     private EditText factionIdEditText;
-    private Button getFactionButton, getUpdateDataButton;
+    private Button getFactionButton, getUpdateDataButton, getPostDataButton, getDeleteDataButton;
     private EditText getEditTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
         getFactionButton = findViewById(R.id.myButton);
         getEditTextView = findViewById(R.id.et_data);
         getUpdateDataButton = findViewById(R.id.btn_updateRequest);
+        getPostDataButton = findViewById(R.id.btn_postRequest);
+        getDeleteDataButton = findViewById(R.id.btn_deleteRequest);
 
         // Example usage for a GET request
         // https://stackoverflow.com/a/54810907
@@ -196,6 +200,72 @@ public class MainActivity extends AppCompatActivity {
                     // Inform the user about invalid input format
                     Toast.makeText(MainActivity.this, "Invalid JSON format", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+        getPostDataButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Get the new data from the EditText
+                String newData = getEditTextView.getText().toString();
+
+                // Check if newData is not empty and is in valid JSON format
+                if (!newData.isEmpty()) {
+                    // Convert the newData string to a JSONObject
+                    JSONObject postRequestBody = new JSONObject();
+                    try {
+                        postRequestBody.put("factionName", newData);
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    Log.i(TAG, postRequestBody.toString());
+
+                    // Construct the API URL for the PUT request
+                    String apiUrlPost = "http://10.0.2.2:8080/factions";
+
+                    // Make a PUT request to update the data
+                    apiCallHelper.makePostRequest(apiUrlPost, postRequestBody, new ApiCallHelper.ApiCallback() {
+                        @Override
+                        public void onApiCompleted(String result) {
+                            // Handle the API response here
+                            Log.i(TAG, "POST Request Response: " + result);
+                        }
+
+                        @Override
+                        public void onApiError(String error) {
+                            // Handle API error
+                            Log.e(TAG, "POST Request Error: " + error);
+                        }
+                    });
+                } else {
+                    // Inform the user about invalid input format
+                    Toast.makeText(MainActivity.this, "Invalid JSON format", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        getDeleteDataButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Get the new data from the EditText
+                String factionId = factionIdEditText.getText().toString().trim();
+
+                // Construct the API URL for the PUT request
+                String apiUrlDelete = "http://10.0.2.2:8080/factions/" + factionId;
+
+                // Make a PUT request to update the data
+                apiCallHelper.makeDeleteRequest(apiUrlDelete, new ApiCallHelper.ApiCallback() {
+                    @Override
+                    public void onApiCompleted(String result) {
+                        // Handle the API response here
+                        Log.i(TAG, "POST Request Response: " + result);
+                    }
+
+                    @Override
+                    public void onApiError(String error) {
+                        // Handle API error
+                        Log.e(TAG, "POST Request Error: " + error);
+                    }
+                });
             }
         });
     }

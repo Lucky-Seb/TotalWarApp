@@ -60,6 +60,18 @@
             android:layout_height="wrap_content"
             android:text="Update data" />
 
+        <Button
+            android:id="@+id/btn_postRequest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Post data" />
+
+        <Button
+            android:id="@+id/btn_deleteRequest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete data" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
