@@ -6,6 +6,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import com.google.gson.Gson;
+
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,7 +20,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private ApiCallHelper apiCallHelper;
     private EditText factionIdEditText;
-    private Button getFactionButton;
+    private Button getFactionButton, getUpdateDataButton;
+    private EditText getEditTextView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
         apiCallHelper = new ApiCallHelper(this);
         factionIdEditText = findViewById(R.id.myEditText);
         getFactionButton = findViewById(R.id.myButton);
+        getEditTextView = findViewById(R.id.et_data);
+        getUpdateDataButton = findViewById(R.id.btn_updateRequest);
 
         // Example usage for a GET request
         // https://stackoverflow.com/a/54810907
@@ -118,7 +126,22 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onApiCompleted(String result) {
                             // Handle the API response here
+                            // Convert the response string to a JSONObject
                             Log.i(TAG, "GET Request Response: " + result);
+                            try {
+                                // Convert the response string to a JSONObject
+                                JSONObject responseObject = new JSONObject(result);
+
+                                // Get the value of the specific field from the JSONObject
+                                String fieldValue = responseObject.optString("factionName");
+
+                                // Display the extracted field value in a TextView or Toast
+                                // For example, if you have a TextView with id 'textView'
+                                getEditTextView.setText(fieldValue);
+                            } catch (JSONException e) {
+                                // Handle JSON parsing error
+                                Log.e(TAG, "JSON parsing error: " + e.getMessage());
+                            }
                         }
 
                         @Override
@@ -133,5 +156,48 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        getUpdateDataButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Get the new data from the EditText
+                String newData = getEditTextView.getText().toString();
+
+                // Check if newData is not empty and is in valid JSON format
+                if (!newData.isEmpty()) {
+                    // Convert the newData string to a JSONObject
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        jsonObject.put("factionName", newData);
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    // Get the faction ID from the factionIdEditText
+                    String factionId = factionIdEditText.getText().toString().trim();
+
+                    // Construct the API URL for the PUT request
+                    String apiUrlPut = "http://10.0.2.2:8080/factions/" + factionId;
+
+                    // Make a PUT request to update the data
+                    apiCallHelper.makePutRequest(apiUrlPut, jsonObject, new ApiCallHelper.ApiCallback() {
+                        @Override
+                        public void onApiCompleted(String result) {
+                            // Handle the API response here
+                            Log.i(TAG, "PUT Request Response: " + result);
+                        }
+
+                        @Override
+                        public void onApiError(String error) {
+                            // Handle API error
+                            Log.e(TAG, "PUT Request Error: " + error);
+                        }
+                    });
+                } else {
+                    // Inform the user about invalid input format
+                    Toast.makeText(MainActivity.this, "Invalid JSON format", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
+    // Validate JSON format
 }

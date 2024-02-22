@@ -46,19 +46,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="My Button" />
-        <Spinner
-            android:id="@+id/spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:entries="@array/controller_names" />
 
-        <ListView
-            android:id="@+id/listView"
+        <EditText
+            android:id="@+id/et_data"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </EditText>
+
+        <Button
+            android:id="@+id/btn_updateRequest"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/spinner"
-            android:layout_marginTop="16dp" />
+            android:text="Update data" />
 
     </LinearLayout>
 
