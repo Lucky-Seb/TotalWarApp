@@ -2,19 +2,24 @@ package Projekt.TotalWar.App;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,7 +28,30 @@ public class MainActivity extends AppCompatActivity {
     private EditText factionIdEditText;
     private Button getFactionButton, getUpdateDataButton, getPostDataButton, getDeleteDataButton;
     private EditText getEditTextView;
+    private ListView getFactionListView;
 
+    private ArrayList<FactionModel> parseJsonResponse(String jsonResponse) {
+        ArrayList<FactionModel> factionList = new ArrayList<>();
+        try {
+            JSONArray jsonArray = new JSONArray(jsonResponse);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                Long factionId = jsonObject.getLong("factionId");
+                String factionName = jsonObject.getString("factionName");
+                // Parse other attributes as needed
+
+                // Create a FactionModel object and add it to the list
+                FactionModel factionModel = new FactionModel();
+                factionModel.setFactionId(factionId);
+                factionModel.setFactionName(factionName);
+                // Set other attributes as needed
+                factionList.add(factionModel);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return factionList;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         getUpdateDataButton = findViewById(R.id.btn_updateRequest);
         getPostDataButton = findViewById(R.id.btn_postRequest);
         getDeleteDataButton = findViewById(R.id.btn_deleteRequest);
+        getFactionListView = findViewById(R.id.lv_factions);
 
         // Example usage for a GET request
         // https://stackoverflow.com/a/54810907
@@ -44,13 +73,26 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onApiCompleted(String result) {
                 // Handle the API response here
-                Log.i(TAG, "GET Request Response: " + result);
+                // Parse the JSON response to extract FactionModel data
+                ArrayList<FactionModel> factionList = parseJsonResponse(result);
+
+                Context context = getApplicationContext();
+                // Set the ArrayList<FactionModel> to your FactionListAdapter
+                FactionListAdapter adapter = new FactionListAdapter(context, factionList);
+
+                // Set the adapter to your ListView
+                getFactionListView.setAdapter(adapter);
+
+                // Notify the adapter of the data change
+                adapter.notifyDataSetChanged();
+                Log.i(TAG, "GET ALL Request Response: " + result);
+
             }
 
             @Override
             public void onApiError(String error) {
                 // Handle API error
-                Log.e(TAG, "GET Request Error: " + error);
+                Log.e(TAG, "GET ALL Request Error: " + error);
             }
         });
 
