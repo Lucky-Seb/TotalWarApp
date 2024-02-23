@@ -132,6 +132,9 @@ public class MainActivity extends AppCompatActivity {
                             // Handle the API response here
                             // Convert the response string to a JSONObject
                             Log.i(TAG, "GET Request Response: " + result);
+                            Toast.makeText(MainActivity.this, "GET RESPONSE: "+
+                                            result,
+                                    Toast.LENGTH_LONG).show();
                             try {
                                 // Convert the response string to a JSONObject
                                 JSONObject responseObject = new JSONObject(result);
@@ -145,6 +148,9 @@ public class MainActivity extends AppCompatActivity {
                             } catch (JSONException e) {
                                 // Handle JSON parsing error
                                 Log.e(TAG, "JSON parsing error: " + e.getMessage());
+                                Toast.makeText(MainActivity.this, "ERROR: "+
+                                                e.getMessage(),
+                                        Toast.LENGTH_LONG).show();
                             }
                         }
 
@@ -188,6 +194,9 @@ public class MainActivity extends AppCompatActivity {
                         public void onApiCompleted(String result) {
                             // Handle the API response here
                             Log.i(TAG, "PUT Request Response: " + result);
+                            Toast.makeText(MainActivity.this, "UPDATED ID: "+
+                                    factionIdEditText.getText().toString() + " to: " + jsonObject.optString("factionName"),
+                                    Toast.LENGTH_LONG).show();
                         }
 
                         @Override
@@ -198,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
                     });
                 } else {
                     // Inform the user about invalid input format
-                    Toast.makeText(MainActivity.this, "Invalid JSON format", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Invalid JSON format", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -228,18 +237,22 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onApiCompleted(String result) {
                             // Handle the API response here
-                            Log.i(TAG, "POST Request Response: " + result);
+                            Log.i(TAG, "DELETE Request Response: " + result);
+                            Toast.makeText(MainActivity.this, "POSTED new data" + result,
+                                    Toast.LENGTH_LONG).show();
+
                         }
 
                         @Override
                         public void onApiError(String error) {
                             // Handle API error
-                            Log.e(TAG, "POST Request Error: " + error);
+                            Log.e(TAG, "DELETE Request Error: " + error);
                         }
                     });
                 } else {
                     // Inform the user about invalid input format
-                    Toast.makeText(MainActivity.this, "Invalid JSON format", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Invalid JSON format",
+                            Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -258,6 +271,8 @@ public class MainActivity extends AppCompatActivity {
                     public void onApiCompleted(String result) {
                         // Handle the API response here
                         Log.i(TAG, "POST Request Response: " + result);
+                        Toast.makeText(MainActivity.this, "DELTED ID: "+
+                                factionIdEditText, Toast.LENGTH_LONG).show();
                     }
 
                     @Override
