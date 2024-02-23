@@ -29,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
     private Button getFactionButton, getUpdateDataButton, getPostDataButton, getDeleteDataButton;
     private EditText getEditTextView;
     private ListView getFactionListView;
+    // Declare the adapter globally
+    private FactionListAdapter adapter;
 
     private ArrayList<FactionModel> parseJsonResponse(String jsonResponse) {
         ArrayList<FactionModel> factionList = new ArrayList<>();
@@ -66,6 +68,10 @@ public class MainActivity extends AppCompatActivity {
         getDeleteDataButton = findViewById(R.id.btn_deleteRequest);
         getFactionListView = findViewById(R.id.lv_factions);
 
+        // Initialize the adapter
+        adapter = new FactionListAdapter(getApplicationContext(), new ArrayList<>());
+        getFactionListView.setAdapter(adapter);
+
         // Example usage for a GET request
         // https://stackoverflow.com/a/54810907
         String apiUrlGet = "http://10.0.2.2:8080/factions";
@@ -76,15 +82,14 @@ public class MainActivity extends AppCompatActivity {
                 // Parse the JSON response to extract FactionModel data
                 ArrayList<FactionModel> factionList = parseJsonResponse(result);
 
-                Context context = getApplicationContext();
-                // Set the ArrayList<FactionModel> to your FactionListAdapter
-                FactionListAdapter adapter = new FactionListAdapter(context, factionList);
-
-                // Set the adapter to your ListView
-                getFactionListView.setAdapter(adapter);
-
-                // Notify the adapter of the data change
+                // Update the adapter data and notify the adapter
+                adapter.clear();
+                // Add each item from the parsed list to the adapter
+                for (FactionModel factionModel : factionList) {
+                    adapter.addItem(factionModel);
+                }
                 adapter.notifyDataSetChanged();
+
                 Log.i(TAG, "GET ALL Request Response: " + result);
 
             }
@@ -96,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Example usage for a POST request
+/*        // Example usage for a POST request
         // https://stackoverflow.com/a/54810907
         String apiUrlPost = "http://10.0.2.2:8080/factions/";
         JSONObject postRequestBody = new JSONObject();
@@ -160,7 +165,8 @@ public class MainActivity extends AppCompatActivity {
                 // Handle API error
                 Log.e(TAG, "DELETE Request Error: " + error);
             }
-        });
+        });*/
+
         getFactionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -200,6 +206,8 @@ public class MainActivity extends AppCompatActivity {
                         public void onApiError(String error) {
                             // Handle API error
                             Log.e(TAG, "GET Request Error: " + error);
+                            Toast.makeText(MainActivity.this, "GET Request Error:" + error,
+                                    Toast.LENGTH_LONG).show();
                         }
                     });
                 } else {
@@ -239,12 +247,36 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(MainActivity.this, "UPDATED ID: "+
                                     factionIdEditText.getText().toString() + " to: " + jsonObject.optString("factionName"),
                                     Toast.LENGTH_LONG).show();
+                            try {
+                                // Parse the JSON response to extract the updated faction data
+                                JSONObject updatedFactionObject = new JSONObject(result);
+                                Long factionId = updatedFactionObject.getLong("factionId");
+                                String factionName = updatedFactionObject.getString("factionName");
+
+                                // Find the corresponding FactionModel in the adapter's data list and update it
+                                for (FactionModel factionModel : adapter.getFactionList()) {
+                                    if (factionModel.getFactionId().equals(factionId)) {
+                                        // Update the faction name
+                                        factionModel.setFactionName(factionName);
+                                        break; // Break the loop once the item is found and updated
+                                    }
+                                }
+
+                                // Notify the adapter that the data set has changed
+                                adapter.notifyDataSetChanged();
+                            } catch (JSONException e) {
+                                // Handle JSON parsing error
+                                Log.e(TAG, "JSON parsing error: " + e.getMessage());
+                                // Show error message to the user
+                                Toast.makeText(MainActivity.this, "Error parsing JSON: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            }
                         }
 
                         @Override
                         public void onApiError(String error) {
                             // Handle API error
                             Log.e(TAG, "PUT Request Error: " + error);
+                            Toast.makeText(MainActivity.this,"PUT Request Error: " + error,Toast.LENGTH_LONG).show();
                         }
                     });
                 } else {
@@ -279,16 +311,39 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onApiCompleted(String result) {
                             // Handle the API response here
-                            Log.i(TAG, "DELETE Request Response: " + result);
+                            Log.i(TAG, "POST Request Response: " + result);
                             Toast.makeText(MainActivity.this, "POSTED new data" + result,
                                     Toast.LENGTH_LONG).show();
+                            try {
+                                // Parse the JSON response to extract the newly added faction data
+                                JSONObject newFactionObject = new JSONObject(result);
+                                Long factionId = newFactionObject.getLong("factionId");
+                                String factionName = newFactionObject.getString("factionName");
 
+                                // Create a new FactionModel object for the newly added faction
+                                FactionModel newFaction = new FactionModel();
+                                newFaction.setFactionId(factionId);
+                                newFaction.setFactionName(factionName);
+
+                                // Add the new faction to the adapter
+                                adapter.addItem(newFaction);
+
+                                // Notify the adapter that the data set has changed
+                                adapter.notifyDataSetChanged();
+                            } catch (JSONException e) {
+                                // Handle JSON parsing error
+                                Log.e(TAG, "JSON parsing error: " + e.getMessage());
+                                // Show error message to the user
+                                Toast.makeText(MainActivity.this, "Error parsing JSON: " + e.getMessage(),
+                                        Toast.LENGTH_LONG).show();
+                            }
                         }
 
                         @Override
                         public void onApiError(String error) {
                             // Handle API error
                             Log.e(TAG, "DELETE Request Error: " + error);
+                            Toast.makeText(MainActivity.this,"DELETE Request Error: " + error,Toast.LENGTH_LONG).show();
                         }
                     });
                 } else {
@@ -304,23 +359,36 @@ public class MainActivity extends AppCompatActivity {
                 // Get the new data from the EditText
                 String factionId = factionIdEditText.getText().toString().trim();
 
-                // Construct the API URL for the PUT request
+                // Construct the API URL for the DELETE request
                 String apiUrlDelete = "http://10.0.2.2:8080/factions/" + factionId;
 
-                // Make a PUT request to update the data
+                // Make a DELETE request to delete the data
                 apiCallHelper.makeDeleteRequest(apiUrlDelete, new ApiCallHelper.ApiCallback() {
                     @Override
                     public void onApiCompleted(String result) {
                         // Handle the API response here
-                        Log.i(TAG, "POST Request Response: " + result);
-                        Toast.makeText(MainActivity.this, "DELTED ID: "+
-                                factionIdEditText, Toast.LENGTH_LONG).show();
+                        Log.i(TAG, "DELETE Request Response: " + result);
+
+                        // Remove the deleted item from the adapter's data source
+                        for (int i = 0; i < adapter.getCount(); i++) {
+                            FactionModel faction = (FactionModel) adapter.getItem(i);
+                            if (faction.getFactionId().toString().equals(factionId)) {
+                                adapter.removeAt(i);
+                                break; // Exit loop once item is removed
+                            }
+                        }
+
+                        // Notify the adapter that the data set has changed
+                        adapter.notifyDataSetChanged();
+
+                        Toast.makeText(MainActivity.this, "DELETED ID: " + factionId, Toast.LENGTH_LONG).show();
                     }
 
                     @Override
                     public void onApiError(String error) {
                         // Handle API error
-                        Log.e(TAG, "POST Request Error: " + error);
+                        Log.e(TAG, "DELETE Request Error: " + error);
+                        Toast.makeText(MainActivity.this, "DELETE Request Error:" + error, Toast.LENGTH_LONG).show();
                     }
                 });
             }

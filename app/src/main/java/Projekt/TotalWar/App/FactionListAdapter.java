@@ -41,7 +41,8 @@ public class FactionListAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.list_item_faction, parent, false);
 
             holder = new ViewHolder();
-            holder.nameTextView = convertView.findViewById(R.id.tv_faction_name);
+            holder.factionIdTextView  = convertView.findViewById(R.id.tv_faction_id);
+            holder.factionNameTextView = convertView.findViewById(R.id.tv_faction_name);
             holder.heroesCountTextView = convertView.findViewById(R.id.tv_heroes_count);
 
             convertView.setTag(holder);
@@ -51,7 +52,8 @@ public class FactionListAdapter extends BaseAdapter {
 
         FactionModel faction = mFactionList.get(position);
 
-        holder.nameTextView.setText(faction.factionName);
+        holder.factionNameTextView.setText("Name: "+faction.factionName);
+        holder.factionIdTextView.setText("ID: "+ faction.factionId.toString());
         if (faction.heroes != null) {
             holder.heroesCountTextView.setText("Heroes: " + faction.heroes.size());
         } else {
@@ -62,7 +64,30 @@ public class FactionListAdapter extends BaseAdapter {
     }
 
     static class ViewHolder {
-        TextView nameTextView;
+        TextView factionIdTextView;
+        TextView factionNameTextView;
         TextView heroesCountTextView;
+    }
+    // Custom method to add a single item to the adapter
+    public void addItem(FactionModel factionModel) {
+        mFactionList.add(factionModel);
+        notifyDataSetChanged();
+    }
+
+    // Custom method to clear adapter data
+    public void clear() {
+        mFactionList.clear();
+        notifyDataSetChanged();
+    }
+    public void removeItem(FactionModel factionModel) {
+        mFactionList.remove(factionModel);
+        notifyDataSetChanged();
+    }
+    public ArrayList<FactionModel> getFactionList() {
+        return mFactionList;
+    }
+    public void removeAt(int position) {
+        mFactionList.remove(position);
+        notifyDataSetChanged();
     }
 }
